@@ -19,7 +19,7 @@ button {
     right: 30px;
 }
 button:hover {
-    opacity: 0.9;
+    opacity: 0.2;
 }
 .filters div {
     display: inline-grid;
@@ -100,4 +100,8 @@ button:hover {
 .amenities:hover .popover,
 .locations:hover .popover {
     visibility: visible;
+}
+
+input[type="checkbox"] {
+    margin-right: 5px;
 }
