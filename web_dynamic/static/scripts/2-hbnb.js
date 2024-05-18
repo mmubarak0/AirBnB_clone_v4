@@ -8,6 +8,7 @@ $(function() {
     }
     $('.amenities h4').text(Object.values(amenities).join(', '));
   });
+  // later to be replaced by http://0.0.0.0
   $.get("http://172.21.137.143:5001/api/v1/status/", function(data, textStatus) {
     if (data.status === 'OK') {
       $('header #api_status').addClass('available')
