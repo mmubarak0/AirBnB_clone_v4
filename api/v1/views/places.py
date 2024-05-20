@@ -130,6 +130,9 @@ def places_search():
 
     data = request.get_json()
 
+    page = data.get('page', 1)
+    page_size = data.get('page_size', 10)
+
     if data and len(data):
         states = data.get('states', None)
         cities = data.get('cities', None)
@@ -143,7 +146,10 @@ def places_search():
         list_places = []
         for place in places:
             list_places.append(place.to_dict())
-        return jsonify(list_places)
+        # Apply pagination
+        start = 0
+        end = start + (page * page_size)
+        return jsonify(list_places[start:end])
 
     list_places = []
     if states:
@@ -177,4 +183,7 @@ def places_search():
         d.pop('amenities', None)
         places.append(d)
 
-    return jsonify(places)
+    # Apply pagination
+    start = 0
+    end = start + (page * page_size)
+    return jsonify(places[start:end])

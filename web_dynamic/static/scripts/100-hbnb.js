@@ -34,6 +34,27 @@ $(function() {
       )
     });
   }
+  let currentPage = 1;
+  let isLoading = false;
+  let throttleTimer;
+  function loadMorePlaces() {
+    if (isLoading) return;
+    isLoading = true;
+
+    // later to be replaced by http://0.0.0.0
+    $.post("http://ki2kid.tech:5004/api/v1/places_search/", JSON.stringify({
+      "page": currentPage,
+      "amenities": Object.keys(amenities),
+      "cities": Object.keys(cities),
+      "states": Object.keys(states)
+      }), function(data, textStatus) {
+      data.forEach(function(place) {
+        render(data, textStatus);
+      });
+      currentPage++;
+      isLoading = false;
+    });
+  }
   // update amenities filters
   $('.amenities input[type="checkbox"]').change(function() {
     if ($(this).is(':checked')) {
@@ -62,20 +83,28 @@ $(function() {
     $('.locations h4').text(Object.values(states).concat(Object.values(cities)).join(', '));
   });
   // later to be replaced by http://0.0.0.0
-  $.get("http://172.21.137.143:5001/api/v1/status/", function(data, textStatus) {
+  $.get("http://ki2kid.tech:5004/api/v1/status/", function(data, textStatus) {
     if (data.status === 'OK') {
       $('header #api_status').addClass('available')
     } else {
       $('header #api_status').removeClass('available')
     }
   });
-  // later to be replaced by http://0.0.0.0
-  $.post("http://172.21.137.143:5001/api/v1/places_search/", '{}', function(data, textStatus) {
-    render(data, textStatus);
+  // Load the first page initially
+  loadMorePlaces();
+  // Listen for scroll events
+  $(window).scroll(function() {
+    clearTimeout(throttleTimer); // Clear the previous timer
+    throttleTimer = setTimeout(function() {
+      // Check if we're at the bottom of the page
+      if($(window).scrollTop() + $(window).height() > $(document).height() * 0.9) {
+        loadMorePlaces();
+      }
+    }, 300); // Throttle the scroll event to once every 300ms
   });
   $('button[type="button"]').on("click", function(e) {
     // later to be replaced by http://0.0.0.0
-    $.post("http://172.21.137.143:5001/api/v1/places_search/", JSON.stringify({
+    $.post("http://ki2kid.tech:5004/api/v1/places_search/", JSON.stringify({
         "amenities": Object.keys(amenities),
         "cities": Object.keys(cities),
         "states": Object.keys(states)
